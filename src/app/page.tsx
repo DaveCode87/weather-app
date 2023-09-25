@@ -1,8 +1,10 @@
 "use client";
-
 import React, { useState, ChangeEvent, useEffect } from "react";
 import { WeatherData } from "./shared/weatherData";
 import Image from "next/image";
+import WeatherCard from "./shared/WeatherCard";
+import WeatherImage from "./shared/WeatherImage";
+import WeatherInfo from "./shared/WeatherInfo";
 
 export default function Home() {
   const [city, setCity] = useState<string>("");
@@ -19,7 +21,7 @@ export default function Home() {
     console.log(`Meteo per la città: ${city}`);
     try {
       const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${APIKey}&units=metric`
+        `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${APIKey}&units=metric`
       );
 
       const data = await response.json();
@@ -33,9 +35,50 @@ export default function Home() {
     }
   }
 
+  const getCurrentLocationWeather = async () => {
+    try {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+          const { latitude, longitude } = position.coords;
+          const response = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${APIKey}&units=metric`
+          );
+          const data = await response.json();
+          if (data?.cod === 200) {
+            setCity(data.name);
+            setWeatherData(data);
+            // Chiamata aggiunta per ottenere i dati meteorologici dopo aver impostato la città
+            await fetchWeatherData(data.name);
+          }
+        });
+      } else {
+        console.log("Geolocation not available");
+      }
+    } catch (err) {
+      console.error("Error fetching weather data", err);
+    }
+  };
+
+  const fetchWeatherData = async (cityName: string) => {
+    try {
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${APIKey}&units=metric`
+      );
+
+      const data = await response.json();
+      console.log("data", data);
+
+      if (data?.cod === "400" || data?.cod === "404") throw data;
+
+      setWeatherData(data);
+    } catch (err) {
+      console.log("error", err);
+    }
+  };
+
   useEffect(() => {
-    if (weatherData) {
-      switch (weatherData?.weather[0].main.toLowerCase()) {
+    if (weatherData && weatherData.list && weatherData.list[0]) {
+      switch (weatherData.list[0].weather[0].main.toLowerCase()) {
         case "clear":
           setImageUrl("/images/clear.jpeg");
           break;
@@ -60,6 +103,12 @@ export default function Home() {
       }}
     >
       <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+        <button
+          className="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600"
+          onClick={getCurrentLocationWeather}
+        >
+          Use Current Location
+        </button>
         <h1 className="text-2xl font-semibold text-black mb-2">
           Get the Weather App
         </h1>
@@ -79,19 +128,23 @@ export default function Home() {
         >
           Inserisci
         </button>
-        {weatherData ? (
+        {weatherData && weatherData.list && weatherData.list[0] ? (
           <div className="mt-4">
-            <Image
-              src={`http://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`}
-              alt="Weather Icon"
-              className="w-16 h-16 mx-auto"
-              width={100}
-              height={100}
-            />
-            <p className="text-4xl font-semibold text-black">
-              {weatherData.name}
-              Currently {Math.round(weatherData.main.temp)}°C
-            </p>
+            <WeatherInfo weatherData={weatherData} />
+          </div>
+        ) : null}
+        {weatherData && weatherData.list && weatherData.list[0] ? (
+          <div className="mt-4">
+            <h2 className="text-lg font-semibold mb-2">
+              Previsioni a 5 giorni
+            </h2>
+            <div className="flex flex-wrap text-black">
+              {weatherData.list
+                .filter((forecast, index) => index % 8 === 0)
+                .map((forecast) => (
+                  <WeatherCard key={forecast.dt} forecast={forecast} />
+                ))}
+            </div>
           </div>
         ) : null}
       </div>
