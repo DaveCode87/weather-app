@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import { WeatherData } from "./shared/weatherData";
 import Image from "next/image";
 
 export default function Home() {
   const [city, setCity] = useState<string>("");
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [imageUrl, setImageUrl] = useState<string>("/images/clear.jpeg");
 
   const APIKey: string = "e142aa80633f6b8932694e428510798d";
 
@@ -32,12 +33,30 @@ export default function Home() {
     }
   }
 
+  useEffect(() => {
+    if (weatherData) {
+      switch (weatherData?.weather[0].main.toLowerCase()) {
+        case "clear":
+          setImageUrl("/images/clear.jpeg");
+          break;
+        case "rain":
+          setImageUrl("/images/rain.jpg");
+          break;
+        case "clouds":
+          setImageUrl("/images/clouds.jpg");
+          break;
+        // Aggiungi altri casi per le condizioni meteo desiderate
+        default:
+          setImageUrl("/images/clear.jpeg");
+      }
+    }
+  }, [weatherData]);
+
   return (
     <div
       className="min-h-screen bg-cover bg-center flex justify-center items-center"
       style={{
-        backgroundImage:
-          "url('https://littlevisuals.co/images/atlantic_ridge.jpg')",
+        backgroundImage: `url(${imageUrl})`,
       }}
     >
       <div className="bg-white p-8 rounded-lg shadow-lg text-center">
