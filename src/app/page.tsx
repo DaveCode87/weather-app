@@ -102,43 +102,54 @@ export default function Home() {
         backgroundImage: `url(${imageUrl})`,
       }}
     >
-      <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-        <button
-          className="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600"
-          onClick={getCurrentLocationWeather}
-        >
-          Use Current Location
-        </button>
-        <h1 className="text-2xl font-semibold text-black mb-2">
-          Get the Weather App
-        </h1>
-        <p className="text-gray-600 mb-4">
-          Enter a city and get the weather below
-        </p>
-        <input
-          className="w-full px-3 py-2 border rounded focus:outline-none focus:border-blue-500 text-black"
-          type="text"
-          placeholder="Insert City"
-          value={city}
-          onChange={handleCityChange}
-        />
-        <button
-          className="mt-4 bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600"
-          onClick={handleButtonClick}
-        >
-          Inserisci
-        </button>
+      <div className="min-h-screen bg-cover bg-center flex flex-col justify-center items-center">
+        {/* Box principale al centro */}
+        <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+          <h1 className="text-2xl font-semibold text-black mb-2">
+            Weather App
+          </h1>
+          <input
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:border-blue-500 text-black"
+            type="text"
+            placeholder="Enter a city and get the weather below"
+            value={city}
+            onChange={handleCityChange}
+          />
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <span className="text-gray-600">Use Current Location</span>
+            <div className="relative w-12 h-6 bg-gray-300 rounded-full shadow-inner cursor-pointer">
+              <input
+                type="checkbox"
+                className="hidden absolute w-6 h-6 rounded-full bg-white border-2 border-blue-500 appearance-none cursor-pointer"
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    getCurrentLocationWeather();
+                  }
+                }}
+              />
+              <div className="toggle-dot absolute w-4 h-4 bg-blue-500 rounded-full transition transform translate-x-0 cursor-pointer"></div>
+            </div>
+          </label>
+          <button
+            className="mt-4 bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600"
+            onClick={handleButtonClick}
+          >
+            Inserisci
+          </button>
+          {weatherData && weatherData.list && weatherData.list[0] ? (
+            <div className="mt-4">
+              <WeatherInfo weatherData={weatherData} />
+            </div>
+          ) : null}
+        </div>
+
+        {/* Spazio tra i box */}
+        <div className="my-8"></div>
+
+        {/* Box trasparente per le card previsionali */}
         {weatherData && weatherData.list && weatherData.list[0] ? (
-          <div className="mt-4">
-            <WeatherInfo weatherData={weatherData} />
-          </div>
-        ) : null}
-        {weatherData && weatherData.list && weatherData.list[0] ? (
-          <div className="mt-4">
-            <h2 className="text-lg font-semibold mb-2">
-              Previsioni a 5 giorni
-            </h2>
-            <div className="flex flex-wrap text-black">
+          <div className="bg-opacity-75 p-4 rounded-lg text-black">
+            <div className="flex flex-wrap">
               {weatherData.list
                 .filter((forecast, index) => index % 8 === 0)
                 .map((forecast) => (
