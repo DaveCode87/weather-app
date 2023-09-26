@@ -5,13 +5,12 @@ import Image from "next/image";
 import WeatherCard from "./shared/WeatherCard";
 import WeatherImage from "./shared/WeatherImage";
 import WeatherInfo from "./shared/WeatherInfo";
+import { APIKey } from './../../constant';
 
 export default function Home() {
   const [city, setCity] = useState<string>("");
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [imageUrl, setImageUrl] = useState<string>("/images/clear.jpeg");
-
-  const APIKey: string = "e142aa80633f6b8932694e428510798d";
 
   const handleCityChange = (e: ChangeEvent<HTMLInputElement>) => {
     setCity(e.target.value);
