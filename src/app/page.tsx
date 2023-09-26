@@ -5,7 +5,7 @@ import Image from "next/image";
 import WeatherCard from "./shared/WeatherCard";
 import WeatherImage from "./shared/WeatherImage";
 import WeatherInfo from "./shared/WeatherInfo";
-import { APIKey } from './../../constant';
+import { APIKey } from './constant';
 
 export default function Home() {
   const [city, setCity] = useState<string>("");
