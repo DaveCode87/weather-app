@@ -1,11 +1,11 @@
 "use client";
 import React, { useState, ChangeEvent, useEffect } from "react";
 import { WeatherData } from "./shared/weatherData";
-import Image from "next/image";
 import WeatherCard from "./shared/WeatherCard";
-import WeatherImage from "./shared/WeatherImage";
 import WeatherInfo from "./shared/WeatherInfo";
-import { APIKey } from '../../constants';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { fetchWeatherByCity, fetchWeatherByCoords } from "./shared/Api"; // Importa le funzioni di fetch API
+import "../../fontawesome";
 
 export default function Home() {
   const [city, setCity] = useState<string>("");
@@ -16,37 +16,19 @@ export default function Home() {
     setCity(e.target.value);
   };
 
-  async function handleButtonClick() {
-    console.log(`Meteo per la città: ${city}`);
-    try {
-      const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${APIKey}&units=metric`
-      );
-
-      const data = await response.json();
-      console.log("data", data);
-
-      if (data?.cod === "400" || data?.cod === "404") throw data;
-
-      setWeatherData(data);
-    } catch (err) {
-      console.log("error", err);
-    }
-  }
+  const handleButtonClick = async () => {
+    await fetchWeatherData(city);
+  };
 
   const getCurrentLocationWeather = async () => {
     try {
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(async (position) => {
           const { latitude, longitude } = position.coords;
-          const response = await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${APIKey}&units=metric`
-          );
-          const data = await response.json();
+          const data = await fetchWeatherByCoords(latitude, longitude);
           if (data?.cod === 200) {
             setCity(data.name);
             setWeatherData(data);
-            // Chiamata aggiunta per ottenere i dati meteorologici dopo aver impostato la città
             await fetchWeatherData(data.name);
           }
         });
@@ -58,17 +40,9 @@ export default function Home() {
     }
   };
 
-  const fetchWeatherData = async (cityName: string) => {
+  const fetchWeatherData = async (city: string) => {
     try {
-      const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${APIKey}&units=metric`
-      );
-
-      const data = await response.json();
-      console.log("data", data);
-
-      if (data?.cod === "400" || data?.cod === "404") throw data;
-
+      const data = await fetchWeatherByCity(city);
       setWeatherData(data);
     } catch (err) {
       console.log("error", err);
@@ -87,7 +61,6 @@ export default function Home() {
         case "clouds":
           setImageUrl("/images/clouds.jpg");
           break;
-        // Aggiungi altri casi per le condizioni meteo desiderate
         default:
           setImageUrl("/images/clear.jpeg");
       }
@@ -102,50 +75,42 @@ export default function Home() {
       }}
     >
       <div className="min-h-screen bg-cover bg-center flex flex-col justify-center items-center">
-        {/* Box principale al centro */}
         <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-          <h1 className="text-2xl font-semibold text-black mb-2">
-            Weather App
-          </h1>
-          <input
-            className="w-full px-3 py-2 border rounded focus:outline-none focus:border-blue-500 text-black"
-            type="text"
-            placeholder="Enter a city and get the weather below"
-            value={city}
-            onChange={handleCityChange}
-          />
-          <label className="flex items-center space-x-2 cursor-pointer">
-            <span className="text-gray-600">Use Current Location</span>
-            <div className="relative w-12 h-6 bg-gray-300 rounded-full shadow-inner cursor-pointer">
-              <input
-                type="checkbox"
-                className="hidden absolute w-6 h-6 rounded-full bg-white border-2 border-blue-500 appearance-none cursor-pointer"
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    getCurrentLocationWeather();
-                  }
-                }}
-              />
-              <div className="toggle-dot absolute w-4 h-4 bg-blue-500 rounded-full transition transform translate-x-0 cursor-pointer"></div>
+          <div className="relative mt-4">
+            <input
+              className="w-full px-3 py-2 pr-10 border rounded focus:outline-none focus:border-blue-500 text-black"
+              type="text"
+              placeholder="Enter a city and get the weather below"
+              value={city}
+              onChange={handleCityChange}
+            />
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <button
+                className="bg-transparent text-blue-500 font-semibold px-2 py-1 rounded hover:bg-blue-100"
+                onClick={handleButtonClick}
+              >
+                <FontAwesomeIcon icon="search" className="text-blue-500" />
+              </button>
             </div>
+          </div>
+
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <button
+              className="bg-gray-300 text-gray-600 px-3 py-2 rounded-full hover:bg-blue-500 hover:text-white"
+              onClick={() => {
+                getCurrentLocationWeather();
+              }}
+            >
+              Location
+            </button>
           </label>
-          <button
-            className="mt-4 bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600"
-            onClick={handleButtonClick}
-          >
-            Inserisci
-          </button>
           {weatherData && weatherData.list && weatherData.list[0] ? (
             <div className="mt-4">
               <WeatherInfo weatherData={weatherData} />
             </div>
           ) : null}
         </div>
-
-        {/* Spazio tra i box */}
         <div className="my-8"></div>
-
-        {/* Box trasparente per le card previsionali */}
         {weatherData && weatherData.list && weatherData.list[0] ? (
           <div className="bg-opacity-75 p-4 rounded-lg text-black">
             <div className="flex flex-wrap">

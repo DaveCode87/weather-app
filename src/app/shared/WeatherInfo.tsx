@@ -7,7 +7,6 @@ interface WeatherInfoProps {
 }
 
 const WeatherInfo: React.FC<WeatherInfoProps> = ({ weatherData }) => {
-  const currentWeather = weatherData.list[0];
 
   return (
     <div className="mt-4">
