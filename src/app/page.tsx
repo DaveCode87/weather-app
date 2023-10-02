@@ -94,7 +94,7 @@ export default function Home() {
             </div>
           </div>
 
-          <label className="flex items-center space-x-2 cursor-pointer">
+          <label className="bg-center flex justify-center items-center p-8 space-x-2 cursor-pointer">
             <button
               className="bg-gray-300 text-gray-600 px-3 py-2 rounded-full hover:bg-blue-500 hover:text-white"
               onClick={() => {
