@@ -6,6 +6,7 @@ import WeatherInfo from "./shared/WeatherInfo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fetchWeatherByCity, fetchWeatherByCoords } from "./shared/Api"; // Importa le funzioni di fetch API
 import "../../fontawesome";
+import { MapPin ,Search } from "lucide-react";
 
 export default function Home() {
   const [city, setCity] = useState<string>("");
@@ -49,6 +50,12 @@ export default function Home() {
     }
   };
 
+  const handleEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleButtonClick();
+    }
+  };
+
   useEffect(() => {
     if (weatherData && weatherData.list && weatherData.list[0]) {
       switch (weatherData.list[0].weather[0].main.toLowerCase()) {
@@ -75,41 +82,44 @@ export default function Home() {
       }}
     >
       <div className="min-h-screen bg-cover bg-center flex flex-col justify-center items-center">
-        <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-          <div className="relative mt-4">
+        <div className="bg-white p-8 rounded-lg shadow-lg text-center flex ">
+          <div className="relative m-auto mr-4 flex-row">
             <input
-              className="w-full px-3 py-2 pr-10 border rounded focus:outline-none focus:border-blue-500 text-black"
+              className="w-full px-3 py-2 pr-10 rounded focus:outline-none focus:border-blue-500 text-black"
               type="text"
-              placeholder="Enter a city and get the weather below"
+              placeholder="Enter a city"
               value={city}
               onChange={handleCityChange}
+              onKeyDown={handleEnterPress}
             />
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
               <button
-                className="bg-transparent text-blue-500 font-semibold px-2 py-1 rounded hover:bg-blue-100"
+                className="relative m-auto text-gray-600 cursor-pointer"
                 onClick={handleButtonClick}
               >
-                <FontAwesomeIcon icon="search" className="text-blue-500" />
+                <Search color="#174be8"/>
               </button>
             </div>
           </div>
-
-          <label className="bg-center flex justify-center items-center p-8 space-x-2 cursor-pointer">
-            <button
-              className="bg-gray-300 text-gray-600 px-3 py-2 rounded-full hover:bg-blue-500 hover:text-white"
-              onClick={() => {
-                getCurrentLocationWeather();
-              }}
-            >
-              Location
-            </button>
-          </label>
-          {weatherData && weatherData.list && weatherData.list[0] ? (
-            <div className="mt-4">
-              <WeatherInfo weatherData={weatherData} />
-            </div>
-          ) : null}
+          <div
+            className="relative m-auto text-gray-600 cursor-pointer"
+            onClick={() => {
+              getCurrentLocationWeather();
+            }}
+          >
+            <MapPin size="24" color="#174be8"/>{" "}
+          </div>
         </div>
+
+        {/* {weatherData && weatherData.list && weatherData.list[0] ? (
+          <div className=" p-4 rounded-lg text-black mt-4">
+            <div className=" p-4 rounded-lg  text-center m-2">
+              <h3>{weatherData.city.name}</h3>
+              <p>Temperature: {Math.round(weatherData.list[0].main.temp)}°C</p>
+            </div>
+          </div>
+        ) : null} */}
+
         <div className="my-8"></div>
         {weatherData && weatherData.list && weatherData.list[0] ? (
           <div className="bg-opacity-75 p-4 rounded-lg text-black">

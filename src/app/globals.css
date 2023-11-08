@@ -25,3 +25,52 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+
+.weather-card {
+  width: 200px; /* Imposta una larghezza fissa per la card */
+  height: 250px; /* Imposta un'altezza fissa per la card */
+  padding: 20px; /* Aggiunge spazio interno alla card */
+  background: linear-gradient(to bottom, #2196F3, #FFC107); /* Gradient dall'azzurro al giallo */
+  border: 1px solid #ccc; /* Aggiunge un bordo */
+  border-radius: 10px; /* Aggiunge un bordo arrotondato */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Aggiunge una leggera ombra */
+  transition: transform 0.2s, font-family 0.2s; /* Aggiunge una transizione all'ingrandimento e al font */
+  cursor: pointer; /* Cambia il cursore al passaggio del mouse */
+  font-family: "YourFontName", sans-serif; /* Cambia il font del testo */
+}
+
+.weather-card:hover {
+  transform: scale(1.05); /* Ingrandisce la card al passaggio del mouse */
+}
+
+.weather-card h3 {
+  font-size: 1.5rem; /* Dimensione del testo per l'elemento h3 */
+  color: #333; /* Cambia il colore del testo */
+}
+
+.weather-card p {
+  margin: 10px 0; /* Aggiunge spazio tra i paragrafi */
+  font-size: 1rem; /* Cambia la dimensione del testo per i paragrafi */
+  color: #555; /* Cambia il colore del testo */
+}
+
+.gradient-bg {
+  background: linear-gradient(to bottom, #2196F3, #FFC107); /* Gradient dall'azzurro al giallo */
+}
+
+/* Stili CSS personalizzati per WeatherCard */
+.weather-card {
+  /* ... altri stili rimangono invariati ... */
+  background: linear-gradient(to bottom, #2196F3, #FFC107); /* Applica il gradient */
+}
+
+/* Stili CSS personalizzati per il campo di input */
+.input-field {
+  width: 100%; /* Fai in modo che il campo di input riempia l'intera larghezza */
+  padding: 10px; /* Aggiunge spazio interno al campo di input */
+  background: transparent; /* Imposta lo sfondo trasparente */
+  border: none; /* Rimuovi il bordo */
+  color: #000; /* Cambia il colore del testo */
+  font-size: 16px; /* Imposta la dimensione del testo */
+}
